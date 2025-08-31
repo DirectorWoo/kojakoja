@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>코자코자 - 아기 ASMR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #ffd3a5 100%);
+            min-height: 100vh;
+            padding: 15px;
+            -webkit-text-size-adjust: 100%;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .logo {
+                font-size: 2.5em;
+            }
+            
+            .subtitle {
+                font-size: 1em;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .sound-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+
+        .sound-button {
+            background: white;
+            border: none;
+            border-radius: 20px;
+            padding: 25px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        @media (max-width: 768px) {
+            .sound-button {
+                padding: 20px 10px;
+            }
+            
+            .sound-icon {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+            }
+            
+            .sound-name {
+                font-size: 0.9em;
+            }
+            
+            .sound-description {
+                font-size: 0.8em;
+            }
+        }
+
+        .sound-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .sound-button:active {
+            transform: translateY(-2px);
+        }
+
+        .sound-button.playing {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .sound-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .sound-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .sound-description {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .now-playing {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .now-playing.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .control-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #2980b9;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-slider {
+            width: 100px;
+        }
+
+        .youtube-player {
+            position: fixed;
+            top: -1000px;
+            left: -1000px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .footer {
+            margin-top: 50px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🍼 코자코자 🍼</div>
+            <div class="subtitle">우리 아기를 위한 편안한 소리들</div>
+        </div>
+
+        <div class="sound-grid">
+            <button class="sound-button" data-sound="whitenoise">
+                <span class="sound-icon">🌙</span>
+                <div class="sound-name">신생아 백색소음</div>
+                <div class="sound-description">편안한 잠을 위한 소음</div>
+            </button>
+
+            <button class="sound-button" data-sound="rain">
+                <span class="sound-icon">🌧️</span>
+                <div class="sound-name">빗소리</div>
+                <div class="sound-description">자연의 평온한 리듬</div>
+            </button>
+
+            <button class="sound-button" data-sound="water">
+                <span class="sound-icon">🌊</span>
+                <div class="sound-name">물소리</div>
+                <div class="sound-description">흐르는 시냇물 소리</div>
+            </button>
+
+            <button class="sound-button" data-sound="lullaby">
+                <span class="sound-icon">🎵</span>
+                <div class="sound-name">태교 음악</div>
+                <div class="sound-description">클래식 자장가</div>
+            </button>
+
+            <button class="sound-button" data-sound="heartbeat">
+                <span class="sound-icon">💗</span>
+                <div class="sound-name">심장박동 소리</div>
+                <div class="sound-description">엄마 뱃속 같은 안정감</div>
+            </button>
+
+            <button class="sound-button" data-sound="daddy-song">
+                <span class="sound-icon">🎤</span>
+                <div class="sound-name">아빠의 청춘</div>
+                <div class="sound-description">젊었을 때 부른 그 노래</div>
+            </button>
+        </div>
+
+        <div class="now-playing" id="nowPlaying">
+            <h3>🎶 현재 재생 중</h3>
+            <p id="currentTrack">없음</p>
+            <div class="control-panel">
+                <button class="control-btn" id="pauseBtn">⏸️ 정지</button>
+                <div class="volume-control">
+                    <span>🔊</span>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💕 우리 아기를 위해 만든 특별한 앱 💕</p>
+        </div>
+    </div>
+
+    <!-- YouTube iframe (숨겨진 상태로 백그라운드 재생) -->
+    <iframe class="youtube-player" id="youtubePlayer" width="560" height="315" frameborder="0" allow="autoplay"></iframe>
+
+    <script>
+        // YouTube 비디오 ID들 (실제 유튜브 링크로 교체하세요)
+        const soundLibrary = {
+            whitenoise: {
+                name: '신생아 백색소음',
+                videoId: 'ZXtimhT-ff4', // 백색소음 예시
+                description: '편안한 잠을 위한 소음'
+            },
+            rain: {
+                name: '빗소리',
+                videoId: 'mPZkdNFkNps', // 빗소리 예시
+                description: '자연의 평온한 리듬'
+            },
+            water: {
+                name: '물소리',
+                videoId: 'sySlY1XKlhM', // 물소리 예시
+                description: '흐르는 시냇물 소리'
+            },
+            lullaby: {
+                name: '태교 음악',
+                videoId: 'YQaW2bAVyrc', // 클래식 자장가 예시
+                description: '클래식 자장가'
+            },
+            heartbeat: {
+                name: '심장박동 소리',
+                videoId: 'qYnA9wWFHLI', // 심장박동 소리 예시
+                description: '엄마 뱃속 같은 안정감'
+            },
+            'daddy-song': {
+                name: '아빠의 청춘',
+                videoId: 'dQw4w9WgXcQ', // 아빠의 추억의 노래 (예시로 Rick Roll 😄)
+                description: '젊었을 때 부른 그 노래'
+            }
+        };
+
+        let currentlyPlaying = null;
+        const youtubePlayer = document.getElementById('youtubePlayer');
+        const nowPlaying = document.getElementById('nowPlaying');
+        const currentTrack = document.getElementById('currentTrack');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        // 소리 버튼 클릭 이벤트
+        document.querySelectorAll('.sound-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const soundType = button.dataset.sound;
+                playSound(soundType, button);
+            });
+        });
+
+        function playSound(soundType, buttonElement) {
+            const sound = soundLibrary[soundType];
+            
+            // 이전 재생 중이던 버튼의 상태 제거
+            document.querySelectorAll('.sound-button').forEach(btn => {
+                btn.classList.remove('playing');
+            });
+
+            // 현재 버튼에 재생 상태 추가
+            buttonElement.classList.add('playing');
+            
+            // YouTube 비디오 로드
+            const embedUrl = `https://www.youtube.com/embed/${sound.videoId}?autoplay=1&loop=1&playlist=${sound.videoId}&controls=0`;
+            youtubePlayer.src = embedUrl;
+            
+            // 현재 재생 정보 업데이트
+            currentTrack.textContent = `${sound.name} - ${sound.description}`;
+            nowPlaying.classList.add('active');
+            
+            currentlyPlaying = { soundType, buttonElement };
+        }
+
+        // 정지 버튼
+        pauseBtn.addEventListener('click', () => {
+            youtubePlayer.src = '';
+            nowPlaying.classList.remove('active');
+            
+            if (currentlyPlaying) {
+                currentlyPlaying.buttonElement.classList.remove('playing');
+                currentlyPlaying = null;
+            }
+        });
+
+        // 볼륨 조절 (iframe에서는 제한적)
+        volumeSlider.addEventListener('input', (e) => {
+            // 실제 YouTube iframe에서는 볼륨 조절이 제한적입니다
+            // 이 기능은 향후 YouTube Player API를 사용하여 구현할 수 있습니다
+            console.log('볼륨:', e.target.value);
+        });
+
+        // 페이지 로드 시 환영 메시지
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                alert('🍼 코자코자에 오신 걸 환영해요! 아기를 위한 편안한 소리들을 즐겨보세요 💕');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
